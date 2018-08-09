@@ -1,5 +1,5 @@
 {
-    "name": "valentinfily/laravelchargebee",
+    "name": "ValentinFily/LaravelChargebee",
     "type": "library",
     "description": "A Laravel package which provides an easy way to handle billing and subscriptions.",
     "keywords": [
@@ -17,6 +17,12 @@
             "email": "tijmen@floown.com",
             "homepage": "https://www.floown.com",
             "role": "Developer"
+        },
+        {
+            "name": "Valentin Fily",
+            "email": "valentin@bailfacile.fr",
+            "homepage": "https://www.bailfacile.fr",
+            "role": "Developer"
         }
     ],
     "require": {
@@ -33,12 +39,12 @@
     },
     "autoload": {
         "psr-4": {
-            "TijmenWierenga\\LaravelChargebee\\": "src"
+            "ValentinFily\\LaravelChargebee\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "TijmenWierenga\\LaravelChargebee\\Test\\": "tests"
+            "ValentinFily\\LaravelChargebee\\Test\\": "tests"
         }
     },
     "scripts": {
