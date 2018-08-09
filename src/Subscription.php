@@ -1,5 +1,5 @@
 <?php
-namespace TijmenWierenga\LaravelChargebee;
+namespace ValentinFily\LaravelChargebee;
 
 
 use App\User;
@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Subscription
- * @package TijmenWierenga\LaravelChargebee
+ * @package ValentinFily\LaravelChargebee
  */
 class Subscription extends Model
 {

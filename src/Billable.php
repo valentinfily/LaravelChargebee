@@ -1,10 +1,10 @@
 <?php
-namespace TijmenWierenga\LaravelChargebee;
+namespace ValentinFily\LaravelChargebee;
 
 
 /**
  * Class Billable
- * @package TijmenWierenga\LaravelChargebee
+ * @package ValentinFily\LaravelChargebee
  */
 trait Billable
 {
