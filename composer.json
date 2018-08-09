@@ -1,5 +1,5 @@
 {
-    "name": "tijmen-wierenga/laravel-chargebee",
+    "name": "valentinfily/laravel-chargebee",
     "type": "library",
     "description": "A Laravel package which provides an easy way to handle billing and subscriptions.",
     "keywords": [
@@ -9,7 +9,7 @@
         "Cashier",
         "Subscription"
     ],
-    "homepage": "https://github.com/TijmenWierenga/LaravelChargebee",
+    "homepage": "https://github.com/valentinfily/LaravelChargebee",
     "license": "MIT",
     "authors": [
         {
@@ -47,7 +47,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.0-dev"
+            "dev-master": "1.0"
         }
     }
 }
