@@ -1,5 +1,5 @@
 {
-    "name": "valentinfily/laravel-chargebee",
+    "name": "valentinfily/laravelchargebee",
     "type": "library",
     "description": "A Laravel package which provides an easy way to handle billing and subscriptions.",
     "keywords": [
@@ -47,7 +47,7 @@
     },
     "extra": {
         "branch-alias": {
-            "stable": "1.0"
+            "dev-master": "1.0-dev"
         }
     }
 }
