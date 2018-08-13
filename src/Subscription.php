@@ -35,7 +35,7 @@ class Subscription extends Model
      */
     public function addons()
     {
-        return $this->hasMany(Addon::class);
+        return $this->hasMany(Addon::class, 'id', 'subscription_id');
     }
 
     /**
