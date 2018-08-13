@@ -4,6 +4,8 @@ namespace ValentinFily\LaravelChargebee;
 use ChargeBee_Environment;
 use ChargeBee_HostedPage;
 use ChargeBee_Subscription;
+use ChargeBee_Customer;
+use ChargeBee_PaymentSource;
 use Illuminate\Database\Eloquent\Model;
 use ValentinFily\LaravelChargebee\Exceptions\MissingPlanException;
 use ValentinFily\LaravelChargebee\Exceptions\UserMismatchException;
