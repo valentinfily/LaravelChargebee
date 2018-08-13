@@ -249,6 +249,27 @@ class Subscriber
     }
 
     /**
+     * Refresh database cache of subscription and addons
+     *
+     * @return null
+     */
+    public function refreshDatabaseCache()
+    {
+      $subscriptionCB = ChargeBee_Subscription::retrieve($this->subscription_id);
+
+      $subscription->update([
+        'plan_id' => $subscriptionCB->subscription()->planId,
+        'quantity' => $subscriptionCB->planQuantity,
+        'ends_at' => $subscriptionCB->cancelledAt,
+        'trial_end_at' => $subscriptionCB->trialEnd,
+        'next_billing_at' => $subscriptionCB->subscription()->nextBillingAt,
+      ]);
+
+      $subscription->save();
+
+    }
+
+    /**
      * Cancel an existing subscription
      *
      * @param Subscription $subscription
