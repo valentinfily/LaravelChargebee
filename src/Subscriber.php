@@ -237,10 +237,10 @@ class Subscriber
       $paymentSource = ChargeBee_PaymentSource::retrieve($customer->customer()->primaryPaymentSourceId);
 
       if($paymentSource->paymentSource()->type==="paypal_express_checkout") {
-        $subscription->lastFour = null;
+        $subscription->last_four = null;
         $subscription->brand = 'paypal';
       } elseif($paymentSource->paymentSource()->type==="card") {
-        $subscription->lastFour = $paymentSource->paymentSource()->card->last4;
+        $subscription->last_four = $paymentSource->paymentSource()->card->last4;
         $subscription->brand = $paymentSource->paymentSource()->card->brand;
       }
 
