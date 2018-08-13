@@ -96,6 +96,7 @@ class Subscriber
             foreach ($addons as $addon)
             {
                 $subscription->addons()->create([
+                    'name' => $addon->name,
                     'quantity' => $addon->quantity,
                     'addon_id' => $addon->id,
                 ]);
@@ -161,6 +162,7 @@ class Subscriber
             foreach ($addons as $addon)
             {
                 $subscription->addons()->create([
+                    'name' => $addon->name,
                     'quantity' => $addon->quantity,
                     'addon_id' => $addon->id,
                 ]);
@@ -266,6 +268,7 @@ class Subscriber
             // TODO: Check if parameters are valid and catch exception.
             $this->addOns[] = [
                 'id'        => $addOn['id'],
+                'name'      => $addOn['name'],
                 'quantity'  => $addOn['quantity']
             ];
         }
