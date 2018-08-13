@@ -179,4 +179,14 @@ class Subscription extends Model
 
         return Carbon::now()->lt($this->ends_at);
     }
+
+    /**
+     * Determine if the subscription is within its grace period after cancellation.
+     *
+     * @return bool
+     */
+    public function onGracePeriod()
+    {
+        return $this->ends_at && $this->ends_at->isFuture();
+    }
 }
