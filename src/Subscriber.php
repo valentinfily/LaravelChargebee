@@ -236,17 +236,20 @@ class Subscriber
 
       $paymentSource = ChargeBee_PaymentSource::retrieve($customer->customer()->primaryPaymentSourceId);
 
-      if($paymentSource->type==="paypal_express_checkout") {
+      if($paymentSource->paymentSource()->type==="paypal_express_checkout") {
         $subscription->lastFour = null;
         $subscription->brand = 'paypal';
-      } elseif($paymentSource->type==="card") {
-        $subscription->lastFour = $paymentSource->card()->last4;
-        $subscription->brand = $paymentSource->card()->brand;
+      } elseif($paymentSource->paymentSource()->type==="card") {
+        $subscription->lastFour = $paymentSource->paymentSource()->card->last4;
+        $subscription->brand = $paymentSource->paymentSource()->card->brand;
       }
 
       $subscription->save();
 
     }
+    ChargeBee_Environment::configure(env('CHARGEBEE_SITE'), env('CHARGEBEE_KEY'));
+    $customer = ChargeBee_Customer::retrieve('1mbDWiVR0bNTTXFuI');
+    $payment = ChargeBee_PaymentSource::retrieve($customer->customer()->primaryPaymentSourceId);
 
     /**
      * Cancel an existing subscription
