@@ -247,9 +247,6 @@ class Subscriber
       $subscription->save();
 
     }
-    ChargeBee_Environment::configure(env('CHARGEBEE_SITE'), env('CHARGEBEE_KEY'));
-    $customer = ChargeBee_Customer::retrieve('1mbDWiVR0bNTTXFuI');
-    $payment = ChargeBee_PaymentSource::retrieve($customer->customer()->primaryPaymentSourceId);
 
     /**
      * Cancel an existing subscription
