@@ -189,4 +189,22 @@ class Subscription extends Model
     {
         return $this->ends_at && $this->ends_at->isFuture();
     }
+
+    /**
+     * Returns total quantity on subscriptions accounting for addons/tiered pricing
+     *
+     * @return bool
+     */
+    public function quantityWithAddons()
+    {
+      $addons = $this->addons;
+
+      //loop through addons to count quantity
+      $quantity = 0;
+      foreach($addons as $addon) {
+        $quantity += $addon->quantity;
+      }
+
+      return $quantity;
+    }
 }
