@@ -89,8 +89,8 @@ class Subscriber
             'next_billing_at'   => $subscription->currentTermEnd,
             'trial_ends_at'     => $subscription->trialEnd,
             'quantity'          => $subscription->planQuantity,
-            'last_four'         => $card->gateway!=='paypal' ? $card->last4 : null,
-            'brand'             => $card->gateway==='paypal' ? 'paypal' : $card->cardType,
+            'last_four'         => $card->gateway!=='paypal_express_checkout' ? $card->last4 : null,
+            'brand'             => $card->gateway==='paypal_express_checkout' ? 'paypal' : $card->cardType,
         ]);
 
         if ($addons) {
@@ -155,8 +155,8 @@ class Subscriber
             'next_billing_at'   => $subscription->currentTermEnd,
             'trial_ends_at'     => $subscription->trialEnd,
             'quantity'          => $subscription->planQuantity,
-            'last_four'         => $card->gateway!=='paypal' ? $card->last4 : null,
-            'brand'             => $card->gateway==='paypal' ? 'paypal' : $card->cardType,
+            'last_four'         => $card->gateway!=='paypal_express_checkout' ? $card->last4 : null,
+            'brand'             => $card->gateway==='paypal_express_checkout' ? 'paypal' : $card->cardType,
         ]);
 
         if ($addons) {
