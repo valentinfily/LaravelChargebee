@@ -262,9 +262,9 @@ class Subscriber
 
       $subscription->update([
         'plan_id' => $subscriptionCB->subscription()->planId,
-        'quantity' => $subscriptionCB->planQuantity,
-        'ends_at' => $subscriptionCB->cancelledAt,
-        'trial_end_at' => $subscriptionCB->trialEnd,
+        'quantity' => $subscriptionCB->subscription()->planQuantity,
+        'ends_at' => $subscriptionCB->subscription()->cancelledAt,
+        'trial_end_at' => $subscriptionCB->subscription()->trialEnd,
         'next_billing_at' => $subscriptionCB->subscription()->nextBillingAt,
       ]);
 
