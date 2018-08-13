@@ -269,8 +269,27 @@ class Subscriber
         'next_billing_at' => $subscriptionCB->subscription()->nextBillingAt,
       ]);
 
-      //Update addons in DB
-      $subscription->addOns($subscriptionCB->subscription()->addons);
+
+      //Delete previously created addons
+      $existingAddons = $subscription->addons();
+      if ($existingAddons) {
+        foreach ($existingAddons as $addon)
+        {
+          $addon->delete();
+        }
+      }
+
+      //Create new addons in DB
+      $newAddons = $subscriptionCB->subscription()->addons;
+      if ($newAddons) {
+          foreach ($newAddons as $addon)
+          {
+              $subscription->addons()->create([
+                  'quantity' => $addon->quantity,
+                  'addon_id' => $addon->id,
+              ]);
+          }
+      }
 
       $subscription->save();
 
