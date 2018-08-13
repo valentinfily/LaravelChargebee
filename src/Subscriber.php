@@ -255,7 +255,10 @@ class Subscriber
      */
     public function refreshDatabaseCache()
     {
-      $subscriptionCB = ChargeBee_Subscription::retrieve($this->subscription_id);
+      $user = $this->model;
+      $subscription = $user->subscriptions()->first();
+
+      $subscriptionCB = ChargeBee_Subscription::retrieve($subscription->subscription_id);
 
       $subscription->update([
         'plan_id' => $subscriptionCB->subscription()->planId,
