@@ -221,6 +221,32 @@ class Subscriber
     }
 
     /**
+     * Refresh cached payment method of subscriber after payment method hosted page is close
+     *
+     * @return null
+     */
+    public function refreshPaymentMethod()
+    {
+      $user = $this->model;
+      $subscription = $user->subscriptions()->first();
+      $subscriptionCB = ChargeBee_Subscription::retrieve($subscription->subscription_id);
+      $customer = ChargeBee_Customer::retrieve($subscriptionCB->customer()->id);
+
+      $paymentSource = ChargeBee_PaymentSource::retrieve($customer->customer()->primaryPaymentSourceId);
+
+      if($paymentSource->type==="paypal_express_checkout") {
+        $subscription->lastFour = null;
+        $subscription->brand = 'paypal';
+      } elseif($paymentSource->type==="card") {
+        $subscription->lastFour = $paymentSource->card()->last4;
+        $subscription->brand = $paymentSource->card()->brand;
+      }
+
+      $subscription->save();
+
+    }
+
+    /**
      * Cancel an existing subscription
      *
      * @param Subscription $subscription
