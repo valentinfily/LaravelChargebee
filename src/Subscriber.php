@@ -271,7 +271,7 @@ class Subscriber
 
 
       //Delete previously created addons
-      $existingAddons = $subscription->addons();
+      $existingAddons = $subscription->addons;
       if ($existingAddons) {
         foreach ($existingAddons as $addon)
         {
