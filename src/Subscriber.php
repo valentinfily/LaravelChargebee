@@ -6,6 +6,8 @@ use ChargeBee_HostedPage;
 use ChargeBee_Subscription;
 use ChargeBee_Customer;
 use ChargeBee_PaymentSource;
+use ChargeBee_Invoice;
+use ChargeBee_CreditNote;
 use Illuminate\Database\Eloquent\Model;
 use ValentinFily\LaravelChargebee\Exceptions\MissingPlanException;
 use ValentinFily\LaravelChargebee\Exceptions\UserMismatchException;
@@ -220,6 +222,17 @@ class Subscriber
         return ChargeBee_Subscription::update($subscription->subscription_id, [
             'plan_id' => $plan
         ])->subscription();
+    }
+
+    //List invoices and credit notes
+    public function listInvoices()
+    {
+      $user = $this->model;
+
+      //Retrieve invoices for user
+      $invoices = ChargeBee_Invoice::all(['customerId[is]' => $user->customer_id]);
+
+      return $invoices;
     }
 
     /**
