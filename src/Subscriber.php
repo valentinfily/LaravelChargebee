@@ -80,6 +80,7 @@ class Subscriber
 
         $result = ChargeBee_Subscription::create($subscription);
         $subscription = $result->subscription();
+        $customer = $result->customer();
         $card = $result->card();
         $addons = $subscription->addons;
 
@@ -89,8 +90,8 @@ class Subscriber
             'next_billing_at'   => $subscription->currentTermEnd,
             'trial_ends_at'     => $subscription->trialEnd,
             'quantity'          => $subscription->planQuantity,
-            'last_four'         => $card->gateway!=='paypal_express_checkout' ? $card->last4 : null,
-            'brand'             => $card->gateway==='paypal_express_checkout' ? 'paypal' : $card->cardType,
+            'last_four'         => $customer->paymentMethod->type!=='paypal_express_checkout' ? $card->last4 : null,
+            'brand'             => $customer->paymentMethod->type==='paypal_express_checkout' ? 'paypal' : $card->cardType,
         ]);
 
         if ($addons) {
@@ -146,8 +147,9 @@ class Subscriber
         $subscriptionId = $result->hostedPage()->content['subscription']['id'];
         $result = ChargeBee_Subscription::retrieve($subscriptionId);
         $subscription = $result->subscription();
-        $addons = $subscription->addons;
+        $customer = $result->customer();
         $card = $result->card();
+        $addons = $subscription->addons;
 
         $subscription = $this->model->subscriptions()->create([
             'subscription_id'   => $subscription->id,
@@ -155,8 +157,8 @@ class Subscriber
             'next_billing_at'   => $subscription->currentTermEnd,
             'trial_ends_at'     => $subscription->trialEnd,
             'quantity'          => $subscription->planQuantity,
-            'last_four'         => $card->gateway!=='paypal_express_checkout' ? $card->last4 : null,
-            'brand'             => $card->gateway==='paypal_express_checkout' ? 'paypal' : $card->cardType,
+            'last_four'         => $customer->paymentMethod->type!=='paypal_express_checkout' ? $card->last4 : null,
+            'brand'             => $customer->paymentMethod->type==='paypal_express_checkout' ? 'paypal' : $card->cardType,
         ]);
 
         if ($addons) {
