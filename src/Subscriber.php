@@ -260,6 +260,7 @@ class Subscriber
 
       $subscriptionCB = ChargeBee_Subscription::retrieve($subscription->subscription_id);
 
+      //Update subscription in DB
       $subscription->update([
         'plan_id' => $subscriptionCB->subscription()->planId,
         'quantity' => $subscriptionCB->subscription()->planQuantity,
@@ -267,6 +268,9 @@ class Subscriber
         'trial_end_at' => $subscriptionCB->subscription()->trialEnd,
         'next_billing_at' => $subscriptionCB->subscription()->nextBillingAt,
       ]);
+
+      //Update addons in DB
+      $subscription->addOns($subscriptionCB->subscription()->addons);
 
       $subscription->save();
 
