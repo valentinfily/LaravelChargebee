@@ -20,6 +20,7 @@ class CreateSubscriptionsTable extends Migration
             $table->integer('user_id')->index()->unsigned();
             $table->integer('quantity')->default(1);
             $table->integer('last_four')->nullable();
+            $table->string('brand')->nullable();
             $table->timestamp('ends_at')->nullable();
             $table->timestamp('trial_ends_at')->nullable();
             $table->timestamp('next_billing_at')->nullable();

@@ -89,7 +89,8 @@ class Subscriber
             'next_billing_at'   => $subscription->currentTermEnd,
             'trial_ends_at'     => $subscription->trialEnd,
             'quantity'          => $subscription->planQuantity,
-            'last_four'         => ($card) ? $card->last4 : null,
+            'last_four'         => $card->gateway!=='paypal' ? $card->last4 : null,
+            'brand'             => $card->gateway==='paypal' ? 'paypal' : $card->cardType,
         ]);
 
         if ($addons) {
@@ -154,7 +155,8 @@ class Subscriber
             'next_billing_at'   => $subscription->currentTermEnd,
             'trial_ends_at'     => $subscription->trialEnd,
             'quantity'          => $subscription->planQuantity,
-            'last_four'         => $card->last4,
+            'last_four'         => $card->gateway!=='paypal' ? $card->last4 : null,
+            'brand'             => $card->gateway==='paypal' ? 'paypal' : $card->cardType,
         ]);
 
         if ($addons) {
