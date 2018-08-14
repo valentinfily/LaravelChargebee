@@ -177,7 +177,7 @@ class Subscriber
 
         //Add customer_id to User
         $user = $this->model;
-        $user->customer_id = $subscription->customer()->id;
+        $user->customer_id = $customer->customer()->id;
         $user->save();
 
         return $subscription;
