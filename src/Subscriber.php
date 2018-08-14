@@ -175,11 +175,6 @@ class Subscriber
             }
         }
 
-        //Add customer_id to User
-        $user = $this->model;
-        $user->customer_id = $customer->id;
-        $user->save();
-
         return $subscription;
     }
 
@@ -227,17 +222,6 @@ class Subscriber
         return ChargeBee_Subscription::update($subscription->subscription_id, [
             'plan_id' => $plan
         ])->subscription();
-    }
-
-    //List invoices and credit notes
-    public function listInvoices()
-    {
-      $user = $this->model;
-
-      //Retrieve invoices for user
-      $invoices = ChargeBee_Invoice::all(['customerId[is]' => $user->customer_id]);
-
-      return $invoices;
     }
 
     /**
