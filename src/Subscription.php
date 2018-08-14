@@ -207,4 +207,5 @@ class Subscription extends Model
 
       return $quantity;
     }
+
 }

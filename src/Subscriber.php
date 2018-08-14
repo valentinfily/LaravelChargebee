@@ -175,6 +175,11 @@ class Subscriber
             }
         }
 
+        //Add customer_id to User
+        $user = $this->model;
+        $user->customer_id = $subscription->customer()->id;
+        $user->save();
+
         return $subscription;
     }
 
@@ -282,7 +287,6 @@ class Subscriber
         'trial_end_at' => $subscriptionCB->subscription()->trialEnd,
         'next_billing_at' => $subscriptionCB->subscription()->nextBillingAt,
       ]);
-
 
       //Delete previously created addons
       $existingAddons = $subscription->addons;
