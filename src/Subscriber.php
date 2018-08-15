@@ -363,7 +363,7 @@ class Subscriber
         $subscription = [];
         $subscription['planId'] = $this->plan;
         $subscription['customer'] = [
-            'id' => $this->model->id
+            'id' => $this->model->id,
             'firstName' => $this->model->firstname,
             'lastName'  => $this->model->lastname,
             'email'     => $this->model->email
