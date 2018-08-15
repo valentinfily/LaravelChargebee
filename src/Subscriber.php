@@ -363,8 +363,9 @@ class Subscriber
         $subscription = [];
         $subscription['planId'] = $this->plan;
         $subscription['customer'] = [
-            'firstName' => $this->model->first_name,
-            'lastName'  => $this->model->last_name,
+            'id' => $this->model->id
+            'firstName' => $this->model->firstname,
+            'lastName'  => $this->model->lastname,
             'email'     => $this->model->email
         ];
         $subscription['addons'] = $this->buildAddOns();
