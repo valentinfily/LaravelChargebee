@@ -155,6 +155,7 @@ class Subscriber
         $card = $result->card();
         $addons = $subscription->addons;
 
+
         $subscription = $this->model->subscriptions()->create([
             'subscription_id'   => $subscription->id,
             'plan_id'           => $subscription->planId,
@@ -174,6 +175,11 @@ class Subscriber
                 ]);
             }
         }
+
+        //Change customer id to user id
+        $customerUpdate = ChargeBee_Customer::update($subscriptionId, [
+          'id' => $this->model->id
+        ]);
 
         return $subscription;
     }
