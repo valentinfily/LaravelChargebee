@@ -266,7 +266,7 @@ class Subscriber
     public function refreshDatabaseCache()
     {
       $user = $this->model;
-      $subscription = $user->subscriptions()->where('subscription_id', $subscriptionId)->first();
+      $subscription = $user->subscriptions()->first();
 
       $subscriptionCB = ChargeBee_Subscription::retrieve($subscription->subscription_id);
 
@@ -276,7 +276,7 @@ class Subscriber
         'quantity' => $subscriptionCB->subscription()->planQuantity,
         'scheduled_changes' => $subscriptionCB->subscription()->hasScheduledChanges,
         'ends_at' => $subscriptionCB->subscription()->cancelledAt,
-        'trial_end_at' => $subscriptionCB->subscription()->trialEnd,
+        'trial_ends_at' => $subscriptionCB->subscription()->trialEnd,
         'next_billing_at' => $subscriptionCB->subscription()->nextBillingAt,
       ]);
 
@@ -325,7 +325,7 @@ class Subscriber
         'quantity' => $subscriptionCB->subscription()->planQuantity,
         'scheduled_changes' => $subscriptionCB->subscription()->hasScheduledChanges,
         'ends_at' => $subscriptionCB->subscription()->cancelledAt,
-        'trial_end_at' => $subscriptionCB->subscription()->trialEnd,
+        'trial_ends_at' => $subscriptionCB->subscription()->trialEnd,
         'next_billing_at' => $subscriptionCB->subscription()->nextBillingAt,
       ]);
 
