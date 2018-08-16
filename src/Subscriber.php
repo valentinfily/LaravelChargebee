@@ -302,6 +302,54 @@ class Subscriber
     }
 
     /**
+     * Refresh database cache of subscription and addons
+     *
+     * @return null
+     */
+    public function createTrialSubscription($plan)
+    {
+      $user = $this->model;
+
+      $subscriptionCB = ChargeBee_Subscription::createForCustomer($user->customer_id, [
+        'plan_id' => $plan
+      ]);
+
+      //Update subscription in DB
+      $subscription->update([
+        'plan_id' => $subscriptionCB->subscription()->planId,
+        'quantity' => $subscriptionCB->subscription()->planQuantity,
+        'scheduled_changes' => $subscriptionCB->subscription()->hasScheduledChanges,
+        'ends_at' => $subscriptionCB->subscription()->cancelledAt,
+        'trial_end_at' => $subscriptionCB->subscription()->trialEnd,
+        'next_billing_at' => $subscriptionCB->subscription()->nextBillingAt,
+      ]);
+
+      //Delete previously created addons
+      $existingAddons = $subscription->addons;
+      if ($existingAddons) {
+        foreach ($existingAddons as $addon)
+        {
+          $addon->delete();
+        }
+      }
+
+      //Create new addons in DB
+      $newAddons = $subscriptionCB->subscription()->addons;
+      if ($newAddons) {
+          foreach ($newAddons as $addon)
+          {
+              $subscription->addons()->create([
+                  'quantity' => $addon->quantity,
+                  'addon_id' => $addon->id,
+              ]);
+          }
+      }
+
+      $subscription->save();
+
+    }
+
+    /**
      * Cancel an existing subscription
      *
      * @param Subscription $subscription
