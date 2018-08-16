@@ -156,7 +156,11 @@ class Subscriber
         $addons = $subscription->addons;
 
         $user = $this->model;
-        $user->customer_id = $subscription->id;
+
+        if(!$user->customer_id) {
+          $user->customer_id = $subscription->id;
+        }
+
         $user->save();
 
         $subscription = $this->model->subscriptions()->create([
@@ -262,7 +266,7 @@ class Subscriber
     public function refreshDatabaseCache()
     {
       $user = $this->model;
-      $subscription = $user->subscriptions()->first();
+      $subscription = $user->subscriptions()->where('subscription_id', $subscriptionId)->first();
 
       $subscriptionCB = ChargeBee_Subscription::retrieve($subscription->subscription_id);
 
