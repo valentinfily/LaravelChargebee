@@ -53,7 +53,7 @@ class WebhookController extends Controller
         $subscription = $this->getSubscription($payload->subscription->id);
 
         if ($subscription) {
-            $subscription->updateCancellationDate(NULL);
+            $subscription->removeCancellationDate();
         }
 
         return response("Webhook handled successfully.", 200);
@@ -84,7 +84,7 @@ class WebhookController extends Controller
         $subscription = $this->getSubscription($payload->subscription->id);
 
         if ($subscription) {
-            $subscription->updateCancellationDate(NULL);
+            $subscription->removeCancellationDate();
         }
 
         return response("Webhook handled successfully.", 200);

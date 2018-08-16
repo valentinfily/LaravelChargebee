@@ -27,4 +27,21 @@ trait HandlesWebhooks
 
         return $this;
     }
+
+    /**
+     * Remove subscription's cancellation date.
+     *
+     * Compatible with the following webhooks:
+     * subscription_reactivated / subscription_scheduled_cancellation_removed
+     *
+     * @return $this
+     */
+    public function removeCancellationDate()
+    {
+        $this->ends_at = NULL;
+        $this->save();
+
+        return $this;
+    }
+
 }
