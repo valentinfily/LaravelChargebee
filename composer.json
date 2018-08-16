@@ -30,7 +30,8 @@
         "illuminate/database": "~5.1",
         "illuminate/console": "~5.1",
         "php" : "~5.5|~7.0",
-        "chargebee/chargebee-php": "^2.3"
+        "chargebee/chargebee-php": "^2.3",
+        "vinkla/shield": "^2.4"
     },
     "require-dev": {
         "phpunit/phpunit" : "4.*",
