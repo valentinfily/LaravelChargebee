@@ -315,7 +315,7 @@ class Subscriber
       ]);
 
       //Update subscription in DB
-      $subscription->update([
+      $subscription = $this->model->subscriptions()->create([
         'plan_id' => $subscriptionCB->subscription()->planId,
         'quantity' => $subscriptionCB->subscription()->planQuantity,
         'scheduled_changes' => $subscriptionCB->subscription()->hasScheduledChanges,
