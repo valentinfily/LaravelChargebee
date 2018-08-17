@@ -329,6 +329,10 @@ class Subscriber
         'next_billing_at' => $subscriptionCB->subscription()->nextBillingAt,
       ]);
 
+      //Save in user
+      $user->trial_ends_at = $subscriptionCB->subscription()->trialEnd;
+      $user->save();
+      
       //Delete previously created addons
       $existingAddons = $subscription->addons;
       if ($existingAddons) {
