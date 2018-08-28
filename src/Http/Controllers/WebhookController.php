@@ -124,6 +124,21 @@ class WebhookController extends Controller
      * @param $payload
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
+    public function handleSubscriptionDeleted($payload)
+    {
+        $subscription = $this->getSubscription($payload->subscription->id);
+
+        if ($subscription) {
+            $subscription->deleteWithAddons();
+        }
+
+        return response("Webhook handled successfully.", 200);
+    }
+
+    /**
+     * @param $payload
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
     public function handlePaymentSucceeded($payload)
     {
         $subscription = $this->getSubscription($payload->subscription->id);

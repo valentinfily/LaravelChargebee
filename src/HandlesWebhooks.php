@@ -76,6 +76,29 @@ trait HandlesWebhooks
         return $this;
     }
 
+    /**
+     * Delete Subscription with Addons.
+     *
+     * Compatible with the following webhooks:
+     * subscription_deleted
+     *
+     * @return $this
+     */
+    public function deleteWithAddons()
+    {
+        $addons = $this->addons;
 
+        if($addons) {
+
+          foreach($addons as $addon) {
+            $addon->delete();
+          }
+          
+        }
+
+        $this->delete();
+
+        return $this;
+    }
 
 }
