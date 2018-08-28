@@ -208,4 +208,48 @@ class Subscription extends Model
       return $quantity;
     }
 
+    /**
+     * Refresh database cache of subscription and addons
+     *
+     * @return null
+     */
+    public function refreshDatabaseCache()
+    {
+      $subscriptionCB = ChargeBee_Subscription::retrieve($this->subscription_id);
+
+      //Update subscription in DB
+      $this->update([
+        'plan_id' => $subscriptionCB->subscription()->planId,
+        'quantity' => $subscriptionCB->subscription()->planQuantity,
+        'scheduled_changes' => $subscriptionCB->subscription()->hasScheduledChanges,
+        'ends_at' => $subscriptionCB->subscription()->cancelledAt,
+        'trial_ends_at' => $subscriptionCB->subscription()->trialEnd,
+        'next_billing_at' => $subscriptionCB->subscription()->nextBillingAt,
+      ]);
+
+      //Delete previously created addons
+      $existingAddons = $this->addons;
+      if ($existingAddons) {
+        foreach ($existingAddons as $addon)
+        {
+          $addon->delete();
+        }
+      }
+
+      //Create new addons in DB
+      $newAddons = $subscriptionCB->subscription()->addons;
+      if ($newAddons) {
+          foreach ($newAddons as $addon)
+          {
+              $subscription->addons()->create([
+                  'quantity' => $addon->quantity,
+                  'addon_id' => $addon->id,
+              ]);
+          }
+      }
+
+      $this->save();
+
+    }
+
 }

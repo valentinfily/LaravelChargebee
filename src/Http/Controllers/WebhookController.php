@@ -33,6 +33,21 @@ class WebhookController extends Controller
      * @param $payload
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
+    public function handleSubscriptionChanged($payload)
+    {
+        $subscription = $this->getSubscription($payload->subscription->id);
+
+        if ($subscription) {
+            $subscription->refreshDatabaseCache();
+        }
+
+        return response("Webhook handled successfully.", 200);
+    }
+
+    /**
+     * @param $payload
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
     public function handleSubscriptionCancelled($payload)
     {
         $subscription = $this->getSubscription($payload->subscription->id);
