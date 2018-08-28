@@ -246,7 +246,7 @@ class Subscription extends Model
       if ($newAddons) {
           foreach ($newAddons as $addon)
           {
-              $subscription->addons()->create([
+              $this->addons()->create([
                   'quantity' => $addon->quantity,
                   'addon_id' => $addon->id,
               ]);
