@@ -44,4 +44,38 @@ trait HandlesWebhooks
         return $this;
     }
 
+    /**
+     * Add scheduled changes to subscription.
+     *
+     * Compatible with the following webhooks:
+     * subscription_changes_scheduled
+     *
+     * @return $this
+     */
+    public function scheduleChanges()
+    {
+        $this->scheduled_changes = 1;
+        $this->save();
+
+        return $this;
+    }
+
+    /**
+     * Remove scheduled changes from subscription.
+     *
+     * Compatible with the following webhooks:
+     * subscription_scheduled_changed_removed
+     *
+     * @return $this
+     */
+    public function removeScheduledChanges()
+    {
+        $this->scheduled_changes = 0;
+        $this->save();
+
+        return $this;
+    }
+
+
+
 }

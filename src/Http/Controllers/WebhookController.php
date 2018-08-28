@@ -90,6 +90,35 @@ class WebhookController extends Controller
         return response("Webhook handled successfully.", 200);
     }
 
+    /**
+     * @param $payload
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function handleSubscriptionChangesScheduled($payload)
+    {
+        $subscription = $this->getSubscription($payload->subscription->id);
+
+        if ($subscription) {
+            $subscription->scheduleChanges();
+        }
+
+        return response("Webhook handled successfully.", 200);
+    }
+
+    /**
+     * @param $payload
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function handleSubscriptionScheduledChangesRemoved($payload)
+    {
+        $subscription = $this->getSubscription($payload->subscription->id);
+
+        if ($subscription) {
+            $subscription->removeScheduledChanges();
+        }
+
+        return response("Webhook handled successfully.", 200);
+    }
 
     /**
      * @param $payload
