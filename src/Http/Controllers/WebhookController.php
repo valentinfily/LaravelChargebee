@@ -151,22 +151,6 @@ class WebhookController extends Controller
     }
 
     /**
-     * @param $payload
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
-     */
-    public function handlePaymentSucceeded($payload)
-    {
-        $subscription = $this->getSubscription($payload->subscription->id);
-
-        if ($subscription) {
-            $subscription->ends_at = $payload->subscription->current_term_end;
-            $subscription->save();
-        }
-
-        return response("Webhook handled successfully.", 200);
-    }
-
-    /**
      * @param $subscriptionId
      * @return mixed
      */
