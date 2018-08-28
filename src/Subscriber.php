@@ -157,7 +157,7 @@ class Subscriber
 
         $user = $this->model;
 
-        if(!$user->customer_id) {
+        if(!$user->customer_id || $user->customer_id!==$subscription->id) {
           $user->customer_id = $subscription->id;
         }
 
@@ -332,7 +332,7 @@ class Subscriber
       //Save in user
       $user->trial_ends_at = $subscriptionCB->subscription()->trialEnd;
       $user->save();
-      
+
       //Delete previously created addons
       $existingAddons = $subscription->addons;
       if ($existingAddons) {
