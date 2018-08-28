@@ -5,6 +5,8 @@ namespace ValentinFily\LaravelChargebee;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use ChargeBee_Subscription;
+use ChargeBee_Environment;
 
 /**
  * Class Subscription
@@ -215,6 +217,9 @@ class Subscription extends Model
      */
     public function refreshDatabaseCache()
     {
+      // Set up Chargebee environment keys
+      ChargeBee_Environment::configure(getenv('CHARGEBEE_SITE'), getenv('CHARGEBEE_KEY'));
+
       $subscriptionCB = ChargeBee_Subscription::retrieve($this->subscription_id);
 
       //Update subscription in DB
