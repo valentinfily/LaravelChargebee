@@ -145,6 +145,7 @@ class WebhookController extends Controller
 
         if ($subscription) {
             $subscription->ends_at = $payload->subscription->current_term_end;
+            $subscription->save();
         }
 
         return response("Webhook handled successfully.", 200);
