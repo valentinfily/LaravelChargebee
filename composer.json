@@ -31,7 +31,8 @@
         "illuminate/console": "~5.1",
         "php" : "~5.5|~7.0",
         "chargebee/chargebee-php": "^2.3",
-        "olssonm/l5-very-basic-auth": "^5.2"
+        "olssonm/l5-very-basic-auth": "^5.2",
+        "barryvdh/laravel-cors": "^0.11.2"
     },
     "require-dev": {
         "phpunit/phpunit" : "4.*",
