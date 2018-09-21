@@ -1,5 +1,5 @@
 {
-    "name": "ValentinFily/LaravelChargebee",
+    "name": "valentinfily/laravelchargebee",
     "type": "library",
     "description": "A Laravel package which provides an easy way to handle billing and subscriptions.",
     "keywords": [
@@ -9,7 +9,7 @@
         "Cashier",
         "Subscription"
     ],
-    "homepage": "https://github.com/valentinfily/LaravelChargebee",
+    "homepage": "https://github.com/valentinfily/laravelchargebee",
     "license": "MIT",
     "authors": [
         {
