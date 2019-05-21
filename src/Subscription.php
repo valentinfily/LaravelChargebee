@@ -1,7 +1,6 @@
 <?php
 namespace ValentinFily\LaravelChargebee;
 
-
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -16,7 +15,18 @@ class Subscription extends Model
 {
     use HandlesWebhooks;
 
-    protected $fillable = ['subscription_id', 'plan_id', 'user_id', 'quantity', 'last_four', 'brand', 'scheduled_changes', 'trial_ends_at', 'ends_at', 'next_billing_at'];
+    protected $fillable = [
+        'subscription_id',
+        'plan_id',
+        'user_id',
+        'quantity',
+        'last_four',
+        'brand',
+        'scheduled_changes',
+        'trial_ends_at',
+        'ends_at',
+        'next_billing_at',
+    ];
 
     /**
      * @var array
@@ -28,7 +38,8 @@ class Subscription extends Model
      */
     public function user()
     {
-        $model = env('CHARGEBEE_MODEL') ?: config('chargebee.model', User::class);
+        $model =
+            env('CHARGEBEE_MODEL') ?: config('chargebee.model', User::class);
         return $this->belongsTo($model, 'user_id');
     }
 
@@ -51,9 +62,9 @@ class Subscription extends Model
         $subscriber = new Subscriber();
         $subscriptionDetails = $subscriber->swap($this, $plan);
 
-        $this->plan_id          = $subscriptionDetails->planId;
-        $this->trial_ends_at    = $subscriptionDetails->trialEnd;
-        $this->next_billing_at  = $subscriptionDetails->currentTermEnd;
+        $this->plan_id = $subscriptionDetails->planId;
+        $this->trial_ends_at = $subscriptionDetails->trialEnd;
+        $this->next_billing_at = $subscriptionDetails->currentTermEnd;
         $this->save();
 
         return $this;
@@ -134,7 +145,7 @@ class Subscription extends Model
      */
     public function cancelled()
     {
-        return (!! $this->ends_at);
+        return !!$this->ends_at;
     }
 
     /**
@@ -144,8 +155,7 @@ class Subscription extends Model
      */
     public function active()
     {
-        if (! $this->valid())
-        {
+        if (!$this->valid()) {
             return $this->onTrial();
         }
 
@@ -159,8 +169,7 @@ class Subscription extends Model
      */
     public function onTrial()
     {
-        if (!! $this->trial_ends_at)
-        {
+        if (!!$this->trial_ends_at) {
             return Carbon::now()->lt($this->trial_ends_at);
         }
 
@@ -174,8 +183,7 @@ class Subscription extends Model
      */
     public function valid()
     {
-        if (! $this->ends_at)
-        {
+        if (!$this->ends_at) {
             return true;
         }
 
@@ -199,15 +207,15 @@ class Subscription extends Model
      */
     public function quantityWithAddons()
     {
-      $addons = $this->addons;
+        $addons = $this->addons;
 
-      //loop through addons to count quantity
-      $quantity = 0;
-      foreach($addons as $addon) {
-        $quantity += $addon->quantity;
-      }
+        //loop through addons to count quantity
+        $quantity = 0;
+        foreach ($addons as $addon) {
+            $quantity += $addon->quantity;
+        }
 
-      return $quantity;
+        return $quantity;
     }
 
     /**
@@ -217,44 +225,46 @@ class Subscription extends Model
      */
     public function refreshDatabaseCache()
     {
-      // Set up Chargebee environment keys
-      ChargeBee_Environment::configure(getenv('CHARGEBEE_SITE'), getenv('CHARGEBEE_KEY'));
+        // Set up Chargebee environment keys
+        ChargeBee_Environment::configure(
+            config('chargebee.site'),
+            config('chargebee.key')
+        );
 
-      $subscriptionCB = ChargeBee_Subscription::retrieve($this->subscription_id);
+        $subscriptionCB = ChargeBee_Subscription::retrieve(
+            $this->subscription_id
+        );
 
-      //Update subscription in DB
-      $this->update([
-        'plan_id' => $subscriptionCB->subscription()->planId,
-        'quantity' => $subscriptionCB->subscription()->planQuantity,
-        'scheduled_changes' => $subscriptionCB->subscription()->hasScheduledChanges,
-        'ends_at' => $subscriptionCB->subscription()->cancelledAt,
-        'trial_ends_at' => $subscriptionCB->subscription()->trialEnd,
-        'next_billing_at' => $subscriptionCB->subscription()->nextBillingAt,
-      ]);
+        //Update subscription in DB
+        $this->update([
+            'plan_id' => $subscriptionCB->subscription()->planId,
+            'quantity' => $subscriptionCB->subscription()->planQuantity,
+            'scheduled_changes' => $subscriptionCB->subscription()
+                ->hasScheduledChanges,
+            'ends_at' => $subscriptionCB->subscription()->cancelledAt,
+            'trial_ends_at' => $subscriptionCB->subscription()->trialEnd,
+            'next_billing_at' => $subscriptionCB->subscription()->nextBillingAt,
+        ]);
 
-      //Delete previously created addons
-      $existingAddons = $this->addons;
-      if ($existingAddons) {
-        foreach ($existingAddons as $addon)
-        {
-          $addon->delete();
+        //Delete previously created addons
+        $existingAddons = $this->addons;
+        if ($existingAddons) {
+            foreach ($existingAddons as $addon) {
+                $addon->delete();
+            }
         }
-      }
 
-      //Create new addons in DB
-      $newAddons = $subscriptionCB->subscription()->addons;
-      if ($newAddons) {
-          foreach ($newAddons as $addon)
-          {
-              $this->addons()->create([
-                  'quantity' => $addon->quantity,
-                  'addon_id' => $addon->id,
-              ]);
-          }
-      }
+        //Create new addons in DB
+        $newAddons = $subscriptionCB->subscription()->addons;
+        if ($newAddons) {
+            foreach ($newAddons as $addon) {
+                $this->addons()->create([
+                    'quantity' => $addon->quantity,
+                    'addon_id' => $addon->id,
+                ]);
+            }
+        }
 
-      $this->save();
-
+        $this->save();
     }
-
 }

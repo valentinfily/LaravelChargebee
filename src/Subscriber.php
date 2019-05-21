@@ -18,7 +18,6 @@ use ValentinFily\LaravelChargebee\Exceptions\UserMismatchException;
  */
 class Subscriber
 {
-
     /**
      * Configuration settings.
      *
@@ -58,17 +57,23 @@ class Subscriber
      * @param Model|null $model
      * @param null $plan
      */
-    public function __construct(Model $model = null, $plan = null, array $config = null)
-    {
+    public function __construct(
+        Model $model = null,
+        $plan = null,
+        array $config = null
+    ) {
         // Set up Chargebee environment keys
-        ChargeBee_Environment::configure(getenv('CHARGEBEE_SITE'), getenv('CHARGEBEE_KEY'));
+        ChargeBee_Environment::configure(
+            config('chargebee.site'),
+            config('chargebee.key')
+        );
 
         // You can set a plan on the constructor, but it's not required
         $this->plan = $plan;
         $this->model = $model;
 
         // Set config settings.
-        $this->config = ($config) ?: $this->getDefaultConfig();
+        $this->config = $config ?: $this->getDefaultConfig();
     }
 
     /**
@@ -78,7 +83,11 @@ class Subscriber
      */
     public function create($cardToken = null)
     {
-        if (! $this->plan) throw new MissingPlanException('No plan was set to assign to the customer.');
+        if (!$this->plan) {
+            throw new MissingPlanException(
+                'No plan was set to assign to the customer.'
+            );
+        }
 
         $subscription = $this->buildSubscription($cardToken);
 
@@ -89,18 +98,23 @@ class Subscriber
         $addons = $subscription->addons;
 
         $subscription = $this->model->subscriptions()->create([
-            'subscription_id'   => $subscription->id,
-            'plan_id'           => $subscription->planId,
-            'next_billing_at'   => $subscription->currentTermEnd,
-            'trial_ends_at'     => $subscription->trialEnd,
-            'quantity'          => $subscription->planQuantity,
-            'last_four'         => $customer->paymentMethod->type!=='paypal_express_checkout' ? $card->last4 : null,
-            'brand'             => $customer->paymentMethod->type==='paypal_express_checkout' ? 'paypal' : $card->cardType,
+            'subscription_id' => $subscription->id,
+            'plan_id' => $subscription->planId,
+            'next_billing_at' => $subscription->currentTermEnd,
+            'trial_ends_at' => $subscription->trialEnd,
+            'quantity' => $subscription->planQuantity,
+            'last_four' =>
+                $customer->paymentMethod->type !== 'paypal_express_checkout'
+                    ? $card->last4
+                    : null,
+            'brand' =>
+                $customer->paymentMethod->type === 'paypal_express_checkout'
+                    ? 'paypal'
+                    : $card->cardType,
         ]);
 
         if ($addons) {
-            foreach ($addons as $addon)
-            {
+            foreach ($addons as $addon) {
                 $subscription->addons()->create([
                     'quantity' => $addon->quantity,
                     'addon_id' => $addon->id,
@@ -117,19 +131,21 @@ class Subscriber
      */
     public function getCheckoutUrl($embed = false)
     {
-        if (! $this->plan) throw new MissingPlanException('No plan was set to assign to the customer.');
+        if (!$this->plan) {
+            throw new MissingPlanException(
+                'No plan was set to assign to the customer.'
+            );
+        }
 
         return ChargeBee_HostedPage::checkoutNew([
             'subscription' => [
-                'planId' => $this->plan
+                'planId' => $this->plan,
             ],
-            'addons' => [
-                $this->addOns
-            ],
+            'addons' => [$this->addOns],
             'embed' => $embed,
             'redirectUrl' => $this->config['redirect']['success'],
             'cancelledUrl' => $this->config['redirect']['cancelled'],
-            'passThruContent' => base64_encode($this->model->id)
+            'passThruContent' => base64_encode($this->model->id),
         ])->hostedPage()->url;
     }
 
@@ -146,7 +162,14 @@ class Subscriber
 
         // TODO: Check if subscription was successful or failed.
         // Check if the ID of the model is the same as the ID of the model that performed the payment
-        if (! (int) base64_decode($result->hostedPage()->passThruContent) === $this->model->id) throw new UserMismatchException('The user who performed the payment is not the user you are trying to attach the subscription to');
+        if (
+            !(int) base64_decode($result->hostedPage()->passThruContent) ===
+            $this->model->id
+        ) {
+            throw new UserMismatchException(
+                'The user who performed the payment is not the user you are trying to attach the subscription to'
+            );
+        }
 
         $subscriptionId = $result->hostedPage()->content['subscription']['id'];
         $result = ChargeBee_Subscription::retrieve($subscriptionId);
@@ -161,18 +184,23 @@ class Subscriber
         $user->save();
 
         $subscription = $this->model->subscriptions()->create([
-            'subscription_id'   => $subscription->id,
-            'plan_id'           => $subscription->planId,
-            'next_billing_at'   => $subscription->currentTermEnd,
-            'trial_ends_at'     => $subscription->trialEnd,
-            'quantity'          => $subscription->planQuantity,
-            'last_four'         => $customer->paymentMethod->type!=='paypal_express_checkout' ? $card->last4 : null,
-            'brand'             => $customer->paymentMethod->type==='paypal_express_checkout' ? 'paypal' : $card->cardType,
+            'subscription_id' => $subscription->id,
+            'plan_id' => $subscription->planId,
+            'next_billing_at' => $subscription->currentTermEnd,
+            'trial_ends_at' => $subscription->trialEnd,
+            'quantity' => $subscription->planQuantity,
+            'last_four' =>
+                $customer->paymentMethod->type !== 'paypal_express_checkout'
+                    ? $card->last4
+                    : null,
+            'brand' =>
+                $customer->paymentMethod->type === 'paypal_express_checkout'
+                    ? 'paypal'
+                    : $card->cardType,
         ]);
 
         if ($addons) {
-            foreach ($addons as $addon)
-            {
+            foreach ($addons as $addon) {
                 $subscription->addons()->create([
                     'quantity' => $addon->quantity,
                     'addon_id' => $addon->id,
@@ -195,8 +223,8 @@ class Subscriber
         $this->addOns([
             [
                 'id' => $id,
-                'quantity' => $quantity
-            ]
+                'quantity' => $quantity,
+            ],
         ]);
 
         return $this;
@@ -225,7 +253,7 @@ class Subscriber
     public function swap(Subscription $subscription, $plan)
     {
         return ChargeBee_Subscription::update($subscription->subscription_id, [
-            'plan_id' => $plan
+            'plan_id' => $plan,
         ])->subscription();
     }
 
@@ -236,23 +264,30 @@ class Subscriber
      */
     public function refreshPaymentMethod()
     {
-      $user = $this->model;
-      $subscription = $user->subscriptions()->first();
-      $subscriptionCB = ChargeBee_Subscription::retrieve($subscription->subscription_id);
-      $customer = ChargeBee_Customer::retrieve($subscriptionCB->customer()->id);
+        $user = $this->model;
+        $subscription = $user->subscriptions()->first();
+        $subscriptionCB = ChargeBee_Subscription::retrieve(
+            $subscription->subscription_id
+        );
+        $customer = ChargeBee_Customer::retrieve(
+            $subscriptionCB->customer()->id
+        );
 
-      $paymentSource = ChargeBee_PaymentSource::retrieve($customer->customer()->primaryPaymentSourceId);
+        $paymentSource = ChargeBee_PaymentSource::retrieve(
+            $customer->customer()->primaryPaymentSourceId
+        );
 
-      if($paymentSource->paymentSource()->type==="paypal_express_checkout") {
-        $subscription->last_four = null;
-        $subscription->brand = 'paypal';
-      } elseif($paymentSource->paymentSource()->type==="card") {
-        $subscription->last_four = $paymentSource->paymentSource()->card->last4;
-        $subscription->brand = $paymentSource->paymentSource()->card->brand;
-      }
+        if (
+            $paymentSource->paymentSource()->type === 'paypal_express_checkout'
+        ) {
+            $subscription->last_four = null;
+            $subscription->brand = 'paypal';
+        } elseif ($paymentSource->paymentSource()->type === 'card') {
+            $subscription->last_four = $paymentSource->paymentSource()->card->last4;
+            $subscription->brand = $paymentSource->paymentSource()->card->brand;
+        }
 
-      $subscription->save();
-
+        $subscription->save();
     }
 
     /**
@@ -262,44 +297,44 @@ class Subscriber
      */
     public function refreshDatabaseCache()
     {
-      $user = $this->model;
-      $subscription = $user->subscriptions()->first();
+        $user = $this->model;
+        $subscription = $user->subscriptions()->first();
 
-      $subscriptionCB = ChargeBee_Subscription::retrieve($subscription->subscription_id);
+        $subscriptionCB = ChargeBee_Subscription::retrieve(
+            $subscription->subscription_id
+        );
 
-      //Update subscription in DB
-      $subscription->update([
-        'plan_id' => $subscriptionCB->subscription()->planId,
-        'quantity' => $subscriptionCB->subscription()->planQuantity,
-        'scheduled_changes' => $subscriptionCB->subscription()->hasScheduledChanges,
-        'ends_at' => $subscriptionCB->subscription()->cancelledAt,
-        'trial_ends_at' => $subscriptionCB->subscription()->trialEnd,
-        'next_billing_at' => $subscriptionCB->subscription()->nextBillingAt,
-      ]);
+        //Update subscription in DB
+        $subscription->update([
+            'plan_id' => $subscriptionCB->subscription()->planId,
+            'quantity' => $subscriptionCB->subscription()->planQuantity,
+            'scheduled_changes' => $subscriptionCB->subscription()
+                ->hasScheduledChanges,
+            'ends_at' => $subscriptionCB->subscription()->cancelledAt,
+            'trial_ends_at' => $subscriptionCB->subscription()->trialEnd,
+            'next_billing_at' => $subscriptionCB->subscription()->nextBillingAt,
+        ]);
 
-      //Delete previously created addons
-      $existingAddons = $subscription->addons;
-      if ($existingAddons) {
-        foreach ($existingAddons as $addon)
-        {
-          $addon->delete();
+        //Delete previously created addons
+        $existingAddons = $subscription->addons;
+        if ($existingAddons) {
+            foreach ($existingAddons as $addon) {
+                $addon->delete();
+            }
         }
-      }
 
-      //Create new addons in DB
-      $newAddons = $subscriptionCB->subscription()->addons;
-      if ($newAddons) {
-          foreach ($newAddons as $addon)
-          {
-              $subscription->addons()->create([
-                  'quantity' => $addon->quantity,
-                  'addon_id' => $addon->id,
-              ]);
-          }
-      }
+        //Create new addons in DB
+        $newAddons = $subscriptionCB->subscription()->addons;
+        if ($newAddons) {
+            foreach ($newAddons as $addon) {
+                $subscription->addons()->create([
+                    'quantity' => $addon->quantity,
+                    'addon_id' => $addon->id,
+                ]);
+            }
+        }
 
-      $subscription->save();
-
+        $subscription->save();
     }
 
     /**
@@ -309,50 +344,51 @@ class Subscriber
      */
     public function createTrialSubscription($plan)
     {
-      $user = $this->model;
+        $user = $this->model;
 
-      $subscriptionCB = ChargeBee_Subscription::createForCustomer($user->customer_id, [
-        'plan_id' => $plan
-      ]);
+        $subscriptionCB = ChargeBee_Subscription::createForCustomer(
+            $user->customer_id,
+            [
+                'plan_id' => $plan,
+            ]
+        );
 
-      //Update subscription in DB
-      $subscription = $this->model->subscriptions()->create([
-        'subscription_id' => $subscriptionCB->subscription()->id,
-        'plan_id' => $subscriptionCB->subscription()->planId,
-        'quantity' => $subscriptionCB->subscription()->planQuantity,
-        'scheduled_changes' => $subscriptionCB->subscription()->hasScheduledChanges,
-        'ends_at' => $subscriptionCB->subscription()->cancelledAt,
-        'trial_ends_at' => $subscriptionCB->subscription()->trialEnd,
-        'next_billing_at' => $subscriptionCB->subscription()->nextBillingAt,
-      ]);
+        //Update subscription in DB
+        $subscription = $this->model->subscriptions()->create([
+            'subscription_id' => $subscriptionCB->subscription()->id,
+            'plan_id' => $subscriptionCB->subscription()->planId,
+            'quantity' => $subscriptionCB->subscription()->planQuantity,
+            'scheduled_changes' => $subscriptionCB->subscription()
+                ->hasScheduledChanges,
+            'ends_at' => $subscriptionCB->subscription()->cancelledAt,
+            'trial_ends_at' => $subscriptionCB->subscription()->trialEnd,
+            'next_billing_at' => $subscriptionCB->subscription()->nextBillingAt,
+        ]);
 
-      //Save in user
-      $user->trial_ends_at = $subscriptionCB->subscription()->trialEnd;
-      $user->save();
+        //Save in user
+        $user->trial_ends_at = $subscriptionCB->subscription()->trialEnd;
+        $user->save();
 
-      //Delete previously created addons
-      $existingAddons = $subscription->addons;
-      if ($existingAddons) {
-        foreach ($existingAddons as $addon)
-        {
-          $addon->delete();
+        //Delete previously created addons
+        $existingAddons = $subscription->addons;
+        if ($existingAddons) {
+            foreach ($existingAddons as $addon) {
+                $addon->delete();
+            }
         }
-      }
 
-      //Create new addons in DB
-      $newAddons = $subscriptionCB->subscription()->addons;
-      if ($newAddons) {
-          foreach ($newAddons as $addon)
-          {
-              $subscription->addons()->create([
-                  'quantity' => $addon->quantity,
-                  'addon_id' => $addon->id,
-              ]);
-          }
-      }
+        //Create new addons in DB
+        $newAddons = $subscriptionCB->subscription()->addons;
+        if ($newAddons) {
+            foreach ($newAddons as $addon) {
+                $subscription->addons()->create([
+                    'quantity' => $addon->quantity,
+                    'addon_id' => $addon->id,
+                ]);
+            }
+        }
 
-      $subscription->save();
-
+        $subscription->save();
     }
 
     /**
@@ -361,11 +397,13 @@ class Subscriber
      * @param Subscription $subscription
      * @return null
      */
-    public function cancel(Subscription $subscription, $cancelImmediately = false)
-    {
+    public function cancel(
+        Subscription $subscription,
+        $cancelImmediately = false
+    ) {
         // TODO: Check if subscription is active or in trial
         return ChargeBee_Subscription::cancel($subscription->subscription_id, [
-            'end_of_term' => ! $cancelImmediately
+            'end_of_term' => !$cancelImmediately,
         ])->subscription();
     }
 
@@ -377,7 +415,9 @@ class Subscriber
      */
     public function resume(Subscription $subscription)
     {
-        return ChargeBee_Subscription::removeScheduledCancellation($subscription->subscription_id)->subscription();
+        return ChargeBee_Subscription::removeScheduledCancellation(
+            $subscription->subscription_id
+        )->subscription();
     }
 
     /**
@@ -389,7 +429,9 @@ class Subscriber
     public function reactivate(Subscription $subscription)
     {
         // TODO: Check if subscription is cancelled
-        return ChargeBee_Subscription::reactivate($subscription->subscription_id)->subscription();
+        return ChargeBee_Subscription::reactivate(
+            $subscription->subscription_id
+        )->subscription();
     }
 
     /**
@@ -400,12 +442,11 @@ class Subscriber
      */
     public function addOns(array $addOns)
     {
-        foreach ($addOns as $addOn)
-        {
+        foreach ($addOns as $addOn) {
             // TODO: Check if parameters are valid and catch exception.
             $this->addOns[] = [
-                'id'        => $addOn['id'],
-                'quantity'  => $addOn['quantity']
+                'id' => $addOn['id'],
+                'quantity' => $addOn['quantity'],
             ];
         }
 
@@ -423,14 +464,13 @@ class Subscriber
         $subscription['customer'] = [
             'id' => $this->model->id,
             'firstName' => $this->model->firstname,
-            'lastName'  => $this->model->lastname,
-            'email'     => $this->model->email
+            'lastName' => $this->model->lastname,
+            'email' => $this->model->email,
         ];
         $subscription['addons'] = $this->buildAddOns();
         $subscription['coupon'] = $this->coupon;
 
-        if ($cardToken)
-        {
+        if ($cardToken) {
             $subscription['card']['gateway'] = getenv('CHARGEBEE_GATEWAY');
             $subscription['card']['tmpToken'] = $cardToken;
         }
@@ -443,7 +483,9 @@ class Subscriber
      */
     public function buildAddOns()
     {
-        if (empty($this->addOns)) return null;
+        if (empty($this->addOns)) {
+            return null;
+        }
 
         return $this->addOns;
     }
@@ -453,7 +495,9 @@ class Subscriber
      */
     private function getDefaultConfig()
     {
-        if (getenv('APP_ENV') === 'testing') return null;
+        if (getenv('APP_ENV') === 'testing') {
+            return null;
+        }
 
         return config('chargebee');
     }
