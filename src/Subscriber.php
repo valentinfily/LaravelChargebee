@@ -1,4 +1,5 @@
 <?php
+
 namespace ValentinFily\LaravelChargebee;
 
 use ChargeBee_Environment;
@@ -104,13 +105,13 @@ class Subscriber
             'trial_ends_at' => $subscription->trialEnd,
             'quantity' => $subscription->planQuantity,
             'last_four' =>
-                $customer->paymentMethod->type !== 'paypal_express_checkout'
-                    ? $card->last4
-                    : null,
+            $customer->paymentMethod->type !== 'paypal_express_checkout'
+                ? $card->last4
+                : null,
             'brand' =>
-                $customer->paymentMethod->type === 'paypal_express_checkout'
-                    ? 'paypal'
-                    : $card->cardType,
+            $customer->paymentMethod->type === 'paypal_express_checkout'
+                ? 'paypal'
+                : $card->cardType,
         ]);
 
         if ($addons) {
@@ -190,13 +191,13 @@ class Subscriber
             'trial_ends_at' => $subscription->trialEnd,
             'quantity' => $subscription->planQuantity,
             'last_four' =>
-                $customer->paymentMethod->type !== 'paypal_express_checkout'
-                    ? $card->last4
-                    : null,
+            $customer->paymentMethod->type !== 'paypal_express_checkout'
+                ? $card->last4
+                : null,
             'brand' =>
-                $customer->paymentMethod->type === 'paypal_express_checkout'
-                    ? 'paypal'
-                    : $card->cardType,
+            $customer->paymentMethod->type === 'paypal_express_checkout'
+                ? 'paypal'
+                : $card->cardType,
         ]);
 
         if ($addons) {
@@ -265,7 +266,7 @@ class Subscriber
     public function refreshPaymentMethod()
     {
         $user = $this->model;
-        $subscription = $user->subscriptions()->first();
+        $subscription = $user->subscriptions->last();
         $subscriptionCB = ChargeBee_Subscription::retrieve(
             $subscription->subscription_id
         );
@@ -298,7 +299,7 @@ class Subscriber
     public function refreshDatabaseCache()
     {
         $user = $this->model;
-        $subscription = $user->subscriptions()->first();
+        $subscription = $user->subscriptions->last();
 
         $subscriptionCB = ChargeBee_Subscription::retrieve(
             $subscription->subscription_id

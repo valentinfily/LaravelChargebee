@@ -1,4 +1,5 @@
 <?php
+
 namespace ValentinFily\LaravelChargebee\Http\Controllers;
 
 use App\Http\Controllers\Controller;
@@ -244,7 +245,7 @@ class WebhookController extends Controller
     {
         $subscription = (new Subscription())
             ->where('subscription_id', $subscriptionId)
-            ->first();
+            ->latest()->get()->first();
 
         return $subscription;
     }
