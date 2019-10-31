@@ -237,6 +237,31 @@ class WebhookController extends Controller
         return response('Webhook handled successfully.', 200);
     }
 
+        /**
+     * @param $payload
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function handlePaymentSourceAdded($payload, $type)
+    {
+        $subscription = $this->getSubscription($payload->subscription->id);
+
+        if ($subscription) {
+            $subscription->refreshDatabaseCache();
+
+            if (class_exists('App\Events\ChargebeeWebhookReceivedEvent')) {
+                event(
+                    new ChargebeeWebhookReceivedEvent(
+                        $payload,
+                        $type,
+                        $subscription->user_id
+                    )
+                );
+            }
+        }
+
+        return response('Webhook handled successfully.', 200);
+    }
+
     /**
      * @param $subscriptionId
      * @return mixed
