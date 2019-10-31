@@ -5,6 +5,7 @@ namespace ValentinFily\LaravelChargebee\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use ValentinFily\LaravelChargebee\Subscription;
+use ValentinFily\LaravelChargebee\Subscriber;
 use App\Events\ChargebeeWebhookReceivedEvent;
 
 /**
@@ -243,10 +244,11 @@ class WebhookController extends Controller
      */
     public function handlePaymentSourceAdded($payload, $type)
     {
-        $subscription = $this->getSubscription($payload->subscription->id);
 
-        if ($subscription) {
-            $subscription->refreshDatabaseCache();
+        $subscriber = $this->getSubscriber($payload->customer->id);
+
+        if ($subscriber) {
+            $subscriber->refreshPaymentMethod();
 
             if (class_exists('App\Events\ChargebeeWebhookReceivedEvent')) {
                 event(
@@ -273,5 +275,17 @@ class WebhookController extends Controller
             ->latest()->get()->first();
 
         return $subscription;
+    }
+
+        /**
+     * @param $customerId
+     * @return mixed
+     */
+    protected function getSubscriber($customerId)
+    {
+        $subscriber = (new Subscriber())
+            ->where('customer_id', $customerId)->first();
+
+        return $subscriber;
     }
 }
